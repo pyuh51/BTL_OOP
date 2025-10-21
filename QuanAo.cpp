@@ -1,10 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <iomanip> 
-#include <cstdlib> 
-#include <fstream>
-#include <sstream>
+#include <bits/stdc++.h>
 using namespace std;
 const int IGNORE_BUFFER_SIZE = 1000;
 
@@ -14,8 +8,6 @@ class Quan;
 class Bo;
 void docDuLieu(vector<QuanAo*>& danhSachSanPham);
 void ghiDuLieu(const vector<QuanAo*>& danhSachSanPham);
-
-// LỚP CHA: QUANAO
 
 class QuanAo {
 protected:
@@ -36,7 +28,6 @@ public:
         this->price = 0.0;
     }
 
-    // Hàm nhập thông tin
     virtual void nhap() {
         cout << "\n--- NHAP THONG TIN SAN PHAM ---" << endl;
         
@@ -65,7 +56,7 @@ public:
             cin.clear();
             cin.ignore(IGNORE_BUFFER_SIZE, '\n');
         }
-        cin.ignore(IGNORE_BUFFER_SIZE, '\n'); // Xóa bộ đệm sau nhập số
+        cin.ignore(IGNORE_BUFFER_SIZE, '\n');
     }
 
     virtual void inDayDu() const {
@@ -83,13 +74,11 @@ public:
 
        cout << left << setw(15) << fixed << setprecision(0) << price << endl;
 
-       // Restore stream state
        cout.flags(f);
        cout.precision(prec);
     }
 
     virtual void inToiGian() const {
-       // Save stream state so fixed/precision do not leak
        ios::fmtflags f = cout.flags();
        streamsize prec = cout.precision();
 
@@ -103,12 +92,10 @@ public:
 
        cout << left << setw(15) << fixed << setprecision(0) << price << endl;
 
-       // Restore stream state
        cout.flags(f);
        cout.precision(prec);
     }
 
-    // Hàm ảo thuần túy quan trọng để phân loại
     virtual string getLoai() const = 0;
     string getBrand() const { return brand; }
     string getMaterial() const { return material; }
@@ -130,9 +117,6 @@ public:
     virtual ~QuanAo() {}
 };
 
-//
-// HÀM TIỆN ÍCH IN TIÊU ĐỀ
-// 
 void inTieuDeDayDu() {
     cout << "------------------------------------------------------------------------------------------------------------------------" << endl;
     cout << left << setw(10) << "LOAI"
@@ -159,8 +143,6 @@ void inTieuDeToiGian() {
           << left << setw(15) << "PRICE (VND)" << endl;
     cout << "---------------------------------------------------------------------------------------------------------------" << endl;
 }
-
-// CÁC LỚP CON //
 
 class Ao : public QuanAo {
 public:
@@ -191,7 +173,6 @@ void hienThiTheoLoai(const vector<QuanAo*>& ds, const string& loaiCanHienThi) {
     inTieuDeToiGian();
     bool found = false;
     for (const auto& sp : ds) {
-        // So sánh bằng hàm ảo getLoai() để đảm bảo tính Polymorphism
         if (sp->getLoai() == loaiCanHienThi) {
             sp->inToiGian();
             found = true;
@@ -313,7 +294,6 @@ void hienThiThongTin(const vector<QuanAo*>& ds) {
     } while (choice != 0);
 }
 
-// 3. Bán hàng và cập nhật
 void banVaCapNhat(vector<QuanAo*>& ds) {
     if (ds.empty()) {
         cout << "\nChua co san pham nao trong kho!" << endl;
@@ -361,7 +341,6 @@ void banVaCapNhat(vector<QuanAo*>& ds) {
     ds[stt-1]->banHang(soLuongBan);
 }
 
-// 4. Tìm kiếm (Giữ nguyên)
 void timKiem(const vector<QuanAo*>& ds) {
     if (ds.empty()) {
         cout << "\nChua co san pham nao trong kho!" << endl;
