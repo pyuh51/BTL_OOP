@@ -18,7 +18,7 @@ class QuanAo {
 protected:
     int makeLoai;
     string brand;
-    string size;        
+    string size;
     string color;       
     string material;
     string origin;      
@@ -247,10 +247,11 @@ void ghiDuLieu(const vector<QuanAo*>& ds) {
     f.close();
 }
 
-void docDuLieu(vector<QuanAo*>& ds) {
-    fstream f("dssanpham.csv",ios::in);
+void docDuLieu(vector<QuanAo*>& ds, const string& fileName="dssanpham.csv") {
+    fstream f(fileName,ios::in);
     if(!f) return;
     string line; bool hd=true;
+    if(fileName!="dssanpham.csv") hd=false;
     while(getline(f,line)){
         if(hd){hd=false;continue;}
         if(line.empty())continue;
@@ -277,73 +278,58 @@ void docDuLieu(vector<QuanAo*>& ds) {
     f.close();
 }
 
-void suaTruong(QuanAo* sp, vector<QuanAo*>& ds) {
-    int c;
-    do{
-        cout<<"\n--- Chinh sua ---\n"
-              "1. Thuong hieu\n"
-              "2. Kich co\n"
-              "3. Mau sac\n"
-              "4. Chat lieu\n"
-              "5. "<<sp->getStyleLabel()<<"\n"
-              "6. Xuat xu\n"
-              "7. So luong\n"
-              "8. Gia\n"
-              "0. Quay lai\nChon: ";
-        while(!(cin>>c)){cin.clear();cin.ignore(IGNORE_BUFFER_SIZE,'\n');}
-        cin.ignore(IGNORE_BUFFER_SIZE,'\n');
-        if(c==0) return;
-        string s; long long ll; double d;
-        switch(c){
-            case 1: cout<<"Thuong hieu moi: "; getline(cin,s); if(!s.empty())sp->setBrand(s); break;
-            case 2: cout<<"Kich co moi: "; getline(cin,s); if(!s.empty())sp->setSize(s); break;
-            case 3: cout<<"Mau sac moi: "; getline(cin,s); if(!s.empty())sp->setColor(s); break;
-            case 4: cout<<"Chat lieu moi: "; getline(cin,s); if(!s.empty())sp->setMaterial(s); break;
-            case 5: cout<<sp->getStyleLabel()<<" moi: "; getline(cin,s); if(!s.empty())sp->setStyle(s); break;
-            case 6: cout<<"Xuat xu moi: "; getline(cin,s); if(!s.empty())sp->setOrigin(s); break;
-            case 7: cout<<"So luong moi: ";
-                    while(!(cin>>ll)||ll<=0){cin.clear();cin.ignore(IGNORE_BUFFER_SIZE,'\n');}
-                    cin.ignore(IGNORE_BUFFER_SIZE,'\n'); sp->setNumber(ll); break;
-            case 8: cout<<"Gia moi: ";
-                    while(!(cin>>d)||d<=0){cin.clear();cin.ignore(IGNORE_BUFFER_SIZE,'\n');}
-                    cin.ignore(IGNORE_BUFFER_SIZE,'\n'); sp->setPrice(d); break;
-            default: cout<<"Lua chon khong hop le!\n"; continue;
+void nhapThongTinSanPham(vector<QuanAo*>&ds){
+    int choice;
+    do {
+        cout << "\n--- Menu Nhap Thong Tin ---\n"
+                "1. Nhap thong tin Ao\n"
+                "2. Nhap thong tin Quan\n"
+                "3. Nhap thong tin Bo\n"
+                "0. Quay lai menu chinh\n"
+                "Lua chon cua ban: ";
+        while (!(cin >> choice)) { cout << "Loi: Nhap so! "; cin.clear(); cin.ignore(IGNORE_BUFFER_SIZE, '\n'); }
+        cin.ignore(IGNORE_BUFFER_SIZE, '\n');
+        if (choice == 0) return;
+        QuanAo* spMoi = nullptr;
+        if (choice == 1) spMoi = new Ao();
+        else if (choice == 2) spMoi = new Quan();
+        else if (choice == 3) spMoi = new Bo();
+        else { cout << "Lua chon khong hop le!\n"; continue; }
+
+        spMoi->nhap();
+
+        int idxTrung = -1;
+        for (size_t i=0;i<ds.size();i++) {
+            auto sp = ds[i];
+            if (sp->getLoai()==spMoi->getLoai() &&
+                sp->getBrand()==spMoi->getBrand() &&
+                sp->getSize()==spMoi->getSize() &&
+                sp->getColor()==spMoi->getColor() &&
+                sp->getMaterial()==spMoi->getMaterial() &&
+                sp->getStyle()==spMoi->getStyle() &&
+                sp->getOrigin()==spMoi->getOrigin()) {
+                idxTrung=i; break;
+            }
         }
-        ghiDuLieu(ds);
-        cout<<"==> Cap nhat thanh cong!\n";
-    }while(true);
-}
 
-void sapXepDanhSach(vector<QuanAo*>& dsHienThi) {
-    char choice;
-    cout << "\nBan co muon sap xep ket qua hien thi khong? (y/n): ";
-    cin >> choice;
-    cin.ignore(IGNORE_BUFFER_SIZE, '\n');
-    
-    if (choice != 'y' && choice != 'Y') return;
-
-    tt:
-    int opt;
-    cout << "\n--- Sap Xep San Pham ---\n"
-         << "1. Gia tang\n"
-         << "2. Gia giam\n"
-         << "3. So luong tang\n"
-         << "4. So luong giam\n"
-         << "5. Thuong hieu A->Z\n"
-         << "Chon: ";
-    while(!(cin>>opt)){cin.clear();cin.ignore(IGNORE_BUFFER_SIZE,'\n');}
-    cin.ignore(IGNORE_BUFFER_SIZE,'\n');
-    
-    switch(opt){
-        case 1: sort(dsHienThi.begin(),dsHienThi.end(),[](QuanAo*a,QuanAo*b){return a->getPrice()<b->getPrice();}); break;
-        case 2: sort(dsHienThi.begin(),dsHienThi.end(),[](QuanAo*a,QuanAo*b){return a->getPrice()>b->getPrice();}); break;
-        case 3: sort(dsHienThi.begin(),dsHienThi.end(),[](QuanAo*a,QuanAo*b){return a->getNumber()<b->getNumber();}); break;
-        case 4: sort(dsHienThi.begin(),dsHienThi.end(),[](QuanAo*a,QuanAo*b){return a->getNumber()>b->getNumber();}); break;
-        case 5: sort(dsHienThi.begin(),dsHienThi.end(),[](QuanAo*a,QuanAo*b){
-                 return toLowerSafe(a->getBrand())<toLowerSafe(b->getBrand());}); break;
-        default: cout << "Lua chon khong hop le!\n"; goto tt;
-    }
-    cout << "==> Da sap xep!\n";
+        if (idxTrung != -1) {
+            cout<<"\nSan pham da ton tai!\n1. Khong them\n2. Gop so luong (cap nhat gia moi)\nChon: ";
+            int g;
+            while (!(cin>>g)) { cin.clear(); cin.ignore(IGNORE_BUFFER_SIZE,'\n'); }
+            cin.ignore(IGNORE_BUFFER_SIZE,'\n');
+            if(g==2) {
+                ds[idxTrung]->setNumber(ds[idxTrung]->getNumber() + spMoi->getNumber());
+                ds[idxTrung]->setPrice(spMoi->getPrice());
+                delete spMoi;
+                ghiDuLieu(ds);
+                cout<<"==> Da gop!\n";
+            } else delete spMoi;
+        } else {
+            ds.push_back(spMoi);
+            ghiDuLieu(ds);
+            cout<<"==> Da them!\n";
+        }
+    } while(true);
 }
 
 bool matchSanPham(const QuanAo* sp,
@@ -417,6 +403,38 @@ vector<QuanAo*> timKiemSanPham(const vector<QuanAo*>& ds) {
     return kq;
 }
 
+void sapXepDanhSach(vector<QuanAo*>& dsHienThi) {
+    char choice;
+    cout << "\nBan co muon sap xep ket qua hien thi khong? (y/n): ";
+    cin >> choice;
+    cin.ignore(IGNORE_BUFFER_SIZE, '\n');
+    
+    if (choice != 'y' && choice != 'Y') return;
+
+    tt:
+    int opt;
+    cout << "\n--- Sap Xep San Pham ---\n"
+         << "1. Gia tang\n"
+         << "2. Gia giam\n"
+         << "3. So luong tang\n"
+         << "4. So luong giam\n"
+         << "5. Thuong hieu A->Z\n"
+         << "Chon: ";
+    while(!(cin>>opt)){cin.clear();cin.ignore(IGNORE_BUFFER_SIZE,'\n');}
+    cin.ignore(IGNORE_BUFFER_SIZE,'\n');
+    
+    switch(opt){
+        case 1: sort(dsHienThi.begin(),dsHienThi.end(),[](QuanAo*a,QuanAo*b){return a->getPrice()<b->getPrice();}); break;
+        case 2: sort(dsHienThi.begin(),dsHienThi.end(),[](QuanAo*a,QuanAo*b){return a->getPrice()>b->getPrice();}); break;
+        case 3: sort(dsHienThi.begin(),dsHienThi.end(),[](QuanAo*a,QuanAo*b){return a->getNumber()<b->getNumber();}); break;
+        case 4: sort(dsHienThi.begin(),dsHienThi.end(),[](QuanAo*a,QuanAo*b){return a->getNumber()>b->getNumber();}); break;
+        case 5: sort(dsHienThi.begin(),dsHienThi.end(),[](QuanAo*a,QuanAo*b){
+                 return toLowerSafe(a->getBrand())<toLowerSafe(b->getBrand());}); break;
+        default: cout << "Lua chon khong hop le!\n"; goto tt;
+    }
+    cout << "==> Da sap xep!\n";
+}
+
 void hienThiThongTin(const vector<QuanAo*>& ds) {
     if(ds.empty()){ cout<<"Kho rong!\n"; return; }
     int c;
@@ -454,6 +472,43 @@ void hienThiThongTin(const vector<QuanAo*>& ds) {
         }
         cout << "\n==> Tong so san pham hien thi: " << dsHienThi.size() << '\n';
         
+    }while(true);
+}
+
+void suaTruong(QuanAo* sp, vector<QuanAo*>& ds) {
+    int c;
+    do{
+        cout<<"\n--- Chinh sua ---\n"
+              "1. Thuong hieu\n"
+              "2. Kich co\n"
+              "3. Mau sac\n"
+              "4. Chat lieu\n"
+              "5. "<<sp->getStyleLabel()<<"\n"
+              "6. Xuat xu\n"
+              "7. So luong\n"
+              "8. Gia\n"
+              "0. Quay lai\nChon: ";
+        while(!(cin>>c)){cin.clear();cin.ignore(IGNORE_BUFFER_SIZE,'\n');}
+        cin.ignore(IGNORE_BUFFER_SIZE,'\n');
+        if(c==0) return;
+        string s; long long ll; double d;
+        switch(c){
+            case 1: cout<<"Thuong hieu moi: "; getline(cin,s); if(!s.empty())sp->setBrand(s); break;
+            case 2: cout<<"Kich co moi: "; getline(cin,s); if(!s.empty())sp->setSize(s); break;
+            case 3: cout<<"Mau sac moi: "; getline(cin,s); if(!s.empty())sp->setColor(s); break;
+            case 4: cout<<"Chat lieu moi: "; getline(cin,s); if(!s.empty())sp->setMaterial(s); break;
+            case 5: cout<<sp->getStyleLabel()<<" moi: "; getline(cin,s); if(!s.empty())sp->setStyle(s); break;
+            case 6: cout<<"Xuat xu moi: "; getline(cin,s); if(!s.empty())sp->setOrigin(s); break;
+            case 7: cout<<"So luong moi: ";
+                    while(!(cin>>ll)||ll<=0){cin.clear();cin.ignore(IGNORE_BUFFER_SIZE,'\n');}
+                    cin.ignore(IGNORE_BUFFER_SIZE,'\n'); sp->setNumber(ll); break;
+            case 8: cout<<"Gia moi: ";
+                    while(!(cin>>d)||d<=0){cin.clear();cin.ignore(IGNORE_BUFFER_SIZE,'\n');}
+                    cin.ignore(IGNORE_BUFFER_SIZE,'\n'); sp->setPrice(d); break;
+            default: cout<<"Lua chon khong hop le!\n"; continue;
+        }
+        ghiDuLieu(ds);
+        cout<<"==> Cap nhat thanh cong!\n";
     }while(true);
 }
 
@@ -568,58 +623,60 @@ void banVaCapNhat(vector<QuanAo*>& ds) {
     }while(true);
 }
 
-void nhapThongTinSanPham(vector<QuanAo*>&ds){
-    int choice;
-    do {
-        cout << "\n--- Menu Nhap Thong Tin ---\n"
-                "1. Nhap thong tin Ao\n"
-                "2. Nhap thong tin Quan\n"
-                "3. Nhap thong tin Bo\n"
-                "0. Quay lai menu chinh\n"
-                "Lua chon cua ban: ";
-        while (!(cin >> choice)) { cout << "Loi: Nhap so! "; cin.clear(); cin.ignore(IGNORE_BUFFER_SIZE, '\n'); }
-        cin.ignore(IGNORE_BUFFER_SIZE, '\n');
-        if (choice == 0) return;
-        QuanAo* spMoi = nullptr;
-        if (choice == 1) spMoi = new Ao();
-        else if (choice == 2) spMoi = new Quan();
-        else if (choice == 3) spMoi = new Bo();
-        else { cout << "Lua chon khong hop le!\n"; continue; }
-
-        spMoi->nhap();
-
+void themTuFileCSV(vector<QuanAo*>& ds) {
+    cout << "Nhap ten file .csv (Hay dam bao du lieu trong file duoc dinh dang dung theo mau dulieu1;dulieu2;... ): ";
+    string fName;
+    getline(cin, fName);
+    
+    vector<QuanAo*> dsMoi;
+    docDuLieu(dsMoi, fName);
+    
+    if (dsMoi.empty()) {
+        cout << "==> Loi khi doc file!\n";
+        cout << "    Nguyen nhan co the:\n";
+        cout << "    - File khong ton tai\n";
+        cout << "    - Sai duong dan file\n";
+        cout << "    - Du lieu trong file duoc dinh dang sai\n";
+        cout << "    - File rong\n";
+        return;
+    }
+    
+    int demThem = 0;
+    int demGop = 0;
+    
+    for (auto spMoi : dsMoi) {
         int idxTrung = -1;
-        for (size_t i=0;i<ds.size();i++) {
+        for (size_t i = 0; i < ds.size(); i++) {
             auto sp = ds[i];
-            if (sp->getLoai()==spMoi->getLoai() &&
-                sp->getBrand()==spMoi->getBrand() &&
-                sp->getSize()==spMoi->getSize() &&
-                sp->getColor()==spMoi->getColor() &&
-                sp->getMaterial()==spMoi->getMaterial() &&
-                sp->getStyle()==spMoi->getStyle() &&
-                sp->getOrigin()==spMoi->getOrigin()) {
-                idxTrung=i; break;
+            if (sp->getLoai() == spMoi->getLoai() &&
+                sp->getBrand() == spMoi->getBrand() &&
+                sp->getSize() == spMoi->getSize() &&
+                sp->getColor() == spMoi->getColor() &&
+                sp->getMaterial() == spMoi->getMaterial() &&
+                sp->getStyle() == spMoi->getStyle() &&
+                sp->getOrigin() == spMoi->getOrigin()) {
+                idxTrung = i;
+                break;
             }
         }
-
+        
         if (idxTrung != -1) {
-            cout<<"\nSan pham da ton tai!\n1. Khong them\n2. Gop so luong (cap nhat gia moi)\nChon: ";
-            int g;
-            while (!(cin>>g)) { cin.clear(); cin.ignore(IGNORE_BUFFER_SIZE,'\n'); }
-            cin.ignore(IGNORE_BUFFER_SIZE,'\n');
-            if(g==2) {
-                ds[idxTrung]->setNumber(ds[idxTrung]->getNumber() + spMoi->getNumber());
-                ds[idxTrung]->setPrice(spMoi->getPrice());
-                delete spMoi;
-                ghiDuLieu(ds);
-                cout<<"==> Da gop!\n";
-            } else delete spMoi;
+            ds[idxTrung]->setNumber(ds[idxTrung]->getNumber() + spMoi->getNumber());
+            ds[idxTrung]->setPrice(spMoi->getPrice());
+            delete spMoi;
+            demGop++;
         } else {
             ds.push_back(spMoi);
-            ghiDuLieu(ds);
-            cout<<"==> Da them!\n";
+            demThem++;
         }
-    } while(true);
+    }
+    
+    ghiDuLieu(ds);
+    
+    cout << "\n==> KET QUA:\n";
+    cout << "  + Da them moi: " << demThem << " san pham\n";
+    cout << "  + Da gop (trung lap): " << demGop << " san pham\n";
+    cout << "Tong da them " << (demThem + demGop) << " san pham tu file " << fName << "\n";
 }
 
 void giaiPhongBoNho(vector<QuanAo*>& ds){
@@ -636,30 +693,32 @@ int main(){
         cout<<"\n==============================================\n"
               "      CHUONG TRINH QUAN LY SHOP QUAN AO\n"
               "==============================================\n"
-              " 1. Nhap san pham\n"
+              " 1. Them san pham\n"
               " 2. Hien thi san pham\n"
               " 3. Cap nhat san pham\n"
-              " 4. Thoat\n"
+              " 4. Them san pham tu file .csv\n"
+              " 5. Thoat\n"
               "----------------------------------------------\n"
               "Chon: ";
         while(!(cin>>c)){cin.clear();cin.ignore(IGNORE_BUFFER_SIZE,'\n');}
         cin.ignore(IGNORE_BUFFER_SIZE,'\n');
 
-        if(c!=4) system("cls");
+        if(c!=5) system("cls");
 
         switch(c){
             case 1: nhapThongTinSanPham(ds); break;
             case 2: hienThiThongTin(ds);     break;
             case 3: banVaCapNhat(ds);        break;
-            case 4: cout<<"Thoat chuong trinh...\n"; break;
+            case 4: themTuFileCSV(ds);     break;
+            case 5: cout<<"Thoat chuong trinh...\n"; break;
             default: cout<<"Lua chon khong hop le!\n";
         }
 
-        if(c!=4){ 
+        if(c!=5){ 
             cout<<"\nNhan Enter de tiep tuc...";
             cin.get(); 
         }
-    }while(c!=4);
+    }while(c!=5);
 
     ghiDuLieu(ds);
     giaiPhongBoNho(ds);
