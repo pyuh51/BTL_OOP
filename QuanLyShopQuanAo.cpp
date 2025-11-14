@@ -624,7 +624,7 @@ void banVaCapNhat(vector<QuanAo*>& ds) {
 }
 
 void themTuFileCSV(vector<QuanAo*>& ds) {
-    cout << "Nhap ten file .csv (Hay dam bao du lieu trong file duoc dinh dang dung theo mau dulieu1;dulieu2;... ): ";
+    cout << "Nhap ten file CSV (Hay dam bao du lieu trong file duoc dinh dang dung theo mau dulieu1;dulieu2;... ): ";
     string fName;
     getline(cin, fName);
     
@@ -696,7 +696,7 @@ int main(){
               " 1. Them san pham\n"
               " 2. Hien thi san pham\n"
               " 3. Cap nhat san pham\n"
-              " 4. Them san pham tu file .csv\n"
+              " 4. Them san pham tu file CSV\n"
               " 5. Thoat\n"
               "----------------------------------------------\n"
               "Chon: ";
